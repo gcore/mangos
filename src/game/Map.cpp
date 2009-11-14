@@ -1730,6 +1730,7 @@ uint16 Map::GetAreaFlag(float x, float y, float z) const
             if(z > 350.0f) areaflag = 1950; break;
         // Dalaran
         case 2492:                                          // Forlorn Woods (Crystalsong Forest)
+        case 2371:                                          // Valley of Echoes (Icecrown Glacier)
             if (x > 5568.0f && x < 6116.0f && y > 282.0f && y < 982.0f && z > 563.0f)
             {
                 // Krasus' Landing (Dalaran), fast check
@@ -2426,8 +2427,10 @@ bool InstanceMap::Add(Player *player)
                     if(!playerBind)
                         player->BindToInstance(mapSave, false);
                     else
+                    {
                         // cannot jump to a different instance without resetting it
-                        assert(playerBind->save == mapSave);
+                        //assert(playerBind->save == mapSave);
+                    }
                 }
             }
         }
@@ -2623,7 +2626,7 @@ uint32 InstanceMap::GetMaxPlayers() const
     InstanceTemplate const* iTemplate = ObjectMgr::GetInstanceTemplate(GetId());
     if(!iTemplate)
         return 0;
-    return IsHeroic() ? iTemplate->maxPlayersHeroic : iTemplate->maxPlayers;
+    return IsRaid() && (i_spawnMode == RAID_DIFFICULTY_25MAN_NORMAL || i_spawnMode == RAID_DIFFICULTY_25MAN_HEROIC) ? iTemplate->maxPlayersHeroic : iTemplate->maxPlayers;
 }
 
 /* ******* Battleground Instance Maps ******* */
@@ -2913,8 +2916,8 @@ void Map::ScriptsProcess()
                 }
                 if(step.script->datalong <= OBJECT_FIELD_ENTRY || step.script->datalong >= source->GetValuesCount())
                 {
-                    sLog.outError("SCRIPT_COMMAND_FIELD_SET call for wrong field %u (max count: %u) in object (TypeId: %u).",
-                        step.script->datalong,source->GetValuesCount(),source->GetTypeId());
+                    sLog.outError("SCRIPT_COMMAND_FIELD_SET call for wrong field %u (max count: %u) in object (Entry: %u)(TypeId: %u).",
+                        step.script->datalong,source->GetValuesCount(),source->GetEntry(),source->GetTypeId());
                     break;
                 }
 
